@@ -1,5 +1,6 @@
-import numpy as np
+import glm
 import texture
+
 
 def clamp(val, min, max):
     if val < min:
@@ -11,10 +12,11 @@ def clamp(val, min, max):
 
 
 def get_dist(point, maxd, mind, obj, uv):
-    point = point[:]
-    traveled = np.float(0)
+    point = glm.vec3(point)
+    uv = glm.vec3(uv)
+    traveled = 0
     while traveled < maxd:
-        step = obj.distance_to(point)
+        step = obj(point)
         if step < mind:
             point += uv*step
             return traveled + step, point
@@ -27,10 +29,10 @@ def get_dist(point, maxd, mind, obj, uv):
 
 def cast(arg):
     point, maxd, mind, obj, uv, x, y = arg
-    #print(type(get_dist(point, maxd, mind, obj, uv)))
+
     t, p = get_dist(point, maxd, mind, obj, uv)
 
-    l = clamp((1/maxd)*(maxd-t), 0, 1)
+    l = glm.clamp((1/maxd)*(maxd-t), 0, 1)
     c = l * texture.get_point(p)
 
     return c, (x, y)
