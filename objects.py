@@ -23,9 +23,10 @@ class Point:
 class Circle(Point):
     # Sphere really, but circle is simpler to spell
     def __init__(self, pos, radius):
+        super().__init__(pos)
         self.pos = pos
         self.radius = radius
-        super().__init__(pos)
+
 
     def distance_to(self, point):
         return mag(self.pos - point) - self.radius
@@ -34,9 +35,10 @@ class Circle(Point):
 class Box(Point):
     # A box, of any dimension.
     def __init__(self, pos, size):
+        super().__init__(pos)
         self.pos = pos
         self.size = size
-        super().__init__(pos)
+
 
     def distance_to(self, point):
         # Outwards distance.
@@ -74,14 +76,26 @@ class Octahedron(Point):
         return (sum([abs(x) for x in pos]) - self.size)*self.magicnum
 
 
+class RoundedBex(Point):
+    def __init__(self, pos, size, r):
+        super().__init__(pos)
+        self.pos = pos
+        self.size = size
+        self.r = r
+
+    def distance_to(self, point):
+        # Outwards distance.
+        q = glm.abs(point) - glm.vec3(self.pos)
+        return glm.length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0) - self.r
+
 
 class Repetition():
     def __init__(self, obj, c):
         self.obj = obj
         self.c = c
 
-    def distance_to(self, p):
-        q = (p % self.c)-(self.c*0.5)
+    def distance_to(self, point):
+        q = (point % self.c)-(self.c*0.5)
         return self.obj.distance_to(q)
 
 
