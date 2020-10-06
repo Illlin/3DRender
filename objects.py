@@ -85,6 +85,45 @@ class Repetition():
         return self.obj.distance_to(q)
 
 
+class SmoothIntersect(Point):
+    def __init__(self, obj1, obj2, k):
+        self.obj1 = obj1
+        self.obj2 = obj2
+        self.k = k
+
+    def distance_to(self, point):
+        d2 = self.obj2.distance_to(point)
+        d1 = self.obj1.distance_to(point)
+        h = glm.clamp(0.5 - 0.5 * (d1 + d2) / self.k, 0.0, 1.0)
+        return glm.mix(d2, -d1, h) + self.k * h * (1.0 - h)
+
+
+class SmoothUnion(Point):
+    def __init__(self, obj1, obj2, k):
+        self.obj1 = obj1
+        self.obj2 = obj2
+        self.k = k
+
+    def distance_to(self, point):
+        d2 = self.obj2.distance_to(point)
+        d1 = self.obj1.distance_to(point)
+        h = glm.clamp(0.5 + 0.5 * (d2 - d1) / self.k, 0.0, 1.0)
+        return glm.mix(d2, d1, h) - self.k * h * (1.0 - h)
+
+
+class SmoothSubtract(Point):
+    def __init__(self, obj1, obj2, k):
+        self.obj1 = obj1
+        self.obj2 = obj2
+        self.k = k
+
+    def distance_to(self, point):
+        d2 = self.obj2.distance_to(point)
+        d1 = self.obj1.distance_to(point)
+        h = glm.clamp(0.5 - 0.5 * (d2 + d1) / self.k, 0.0, 1.0)
+        return glm.mix(d2, -d1, h) + self.k * h * (1.0 - h)
+
+
 class Intersect(Point):
     def __init__(self, obj1, obj2):
         self.obj1 = obj1
